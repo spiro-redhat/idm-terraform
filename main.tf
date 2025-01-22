@@ -271,7 +271,7 @@ resource "aws_instance" "rhel8-hosts" {
   
   count         = local.enable_instance ? 3 : 0 
   key_name      = aws_key_pair.deployer.key_name
-  ami           = var.rhel9_ami
+  ami           = var.rhel8_ami
   instance_type = "t2.medium"
   associate_public_ip_address = "true" 
   private_ip = "10.0.1.${11 + count.index}" 
