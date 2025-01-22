@@ -37,9 +37,14 @@ sudo subscription-manager register --username=
 sudo subscription-manager config --rhsm.manage_repos=1
 # to become an ansible host 
 sudo subscription-manager repos --enable=ansible-2.8-for-rhel-8-x86_64-rpms 
-sudo dnf update -y
-sudo dnf install -y ansible ansible-freeipa 
+sudo yum update -y
+sudo yum install -y ansible ansible-freeipa 
+# install packaages 
+sudo yum -y module enable idm:DL1
+sudo yum -y distro-sync 
+sudo yum -y module install idm:DL1/dns 
 sudo subscription-manager repos --list-enabled
+
 EOF
 
 cat << EOF > inventory
