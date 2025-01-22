@@ -42,13 +42,13 @@ sudo dnf install -y ansible ansible-freeipa
 sudo subscription-manager repos --list-enabled
 EOF
 
-cat >> EOF > inventory
+cat << EOF > inventory
 [ipaserver]
-rhel8-1.ipa.spidee.net
+rhel8-1.idm.example.com
 
 [ipaserver:vars]
-ipaserver_domain=ipa.spidee.net
-ipserver_realm=IPA.SPIDEE.NET
+ipaserver_domain=idm.example.com
+ipserver_realm=IDM.EXAMPLE.COM
 iapserver_setup_dns=yes
 ipaserver_autoforwarders=yes
 ipaadmin_password=password123
