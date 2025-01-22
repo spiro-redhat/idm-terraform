@@ -1,12 +1,12 @@
 #! /usr/bin/env bash
 # create a group for ansible users 
 sudo  bash -c 'cat << EOF  >> /etc/hosts
-10.0.1.11   rhel8-1
-10.0.1.12   rhel8-2
-10.0.1.13   rhel8-3
-10.0.1.21   rhel9-1
-10.0.1.22   rhel9-2
-10.0.1.23   rhel9-3
+10.0.1.11   rhel8-1.ipa.spidee.net
+10.0.1.12   rhel8-2.ipa.spidee.net
+10.0.1.13   rhel8-3.ipa.spidee.net
+10.0.1.21   rhel9-1.ipa.spidee.net
+10.0.1.22   rhel9-2.ipa.spidee.net
+10.0.1.23   rhel9-3.ipa.spidee.net
 EOF'
 export IP=$(ip -br addr show eth0 | awk '{ print $3 }' | sed -e 's/\/24//g')
 export HOSTNAME=$(grep $IP /etc/hosts  | awk '{ print $2 }')
