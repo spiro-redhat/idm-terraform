@@ -21,7 +21,7 @@ cat << EOF > /home/ec2-user/.ssh/config
 Host *
     User ec2-user 
     IdentityFile ~/.ssh/id_rsa
-    StrictHostChecking No 
+    StrictHostKeyChecking No 
 EOF
 
 cat << EOF > /home/ec2-user/.ssh/id_rsa
