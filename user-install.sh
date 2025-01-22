@@ -62,3 +62,7 @@ ipaserver_autoforwarders=yes
 ipaadmin_password=password123
 ipadm_password=password123
 EOF
+
+sudo chmod 400 /home/ec2-user/.ssh/id_rsa
+sudo chmod 700 /home/ec2-user/*.sh
+sudo chown -R ec2-user:ec2-user /home/ec2-user/
