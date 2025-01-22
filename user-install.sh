@@ -45,9 +45,9 @@ cat << EOF > /home/ec2-user/rhel8-idm.sh
 #! /usr/bin/env bash
 
 # install packaages
-sudo yum module enable idm:DL1
-sudo yum distro-sync
-sudo yum module install idm:DL1/dns
+sudo yum -y module enable idm:DL1
+sudo yum -y distro-sync
+sudo yum -y module install idm:DL1/dns
 EOF
 
 cat << EOF > /home/ec2-user/inventory
