@@ -27,7 +27,7 @@ variable "rhel9_ami" {
 
 variable "rhel8_ami" {
   type  = string 
-  default = "ami-0e20eb7347c36bf59"
+  default = "ami-08ae8fc5bf20511cc"
 }
 
 
