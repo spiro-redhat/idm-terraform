@@ -59,13 +59,13 @@ EOF
 
 cat << EOF > /home/ec2-user/rhel7-idm.sh
 #! /usr/bin/env bash
-yum install -y ipa-server ipa-server-dns 
+sudo yum install -y ipa-server ipa-server-dns 
 EOF
 
 cat << EOF > /home/ec2-user/rhel9-idm.sh
 #! /usr/bin/env bash
-dnf install -y ipa-server ipa-server-dns 
-# dnf install -y  ipa-server-trust-ad samba-client 
+sudo dnf install -y ipa-server ipa-server-dns 
+# sudo dnf install -y  ipa-server-trust-ad samba-client 
 EOF
 
 
