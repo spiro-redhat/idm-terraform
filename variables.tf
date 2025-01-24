@@ -20,15 +20,21 @@ variable "vpc_name" {
 }
 
 
+
+
+variable "rhel7_ami" {
+    type     = string
+    default = "ami-03130d30867eba962"
+}
+variable "rhel8_ami" {
+  type  = string 
+  default = "ami-07057a188b87059cf"
+}
 variable "rhel9_ami" {
   type  = string 
   default = "ami-08e592fbb0f535224"
 }
 
-variable "rhel8_ami" {
-  type  = string 
-  default = "ami-07057a188b87059cf"
-}
 
 
 
