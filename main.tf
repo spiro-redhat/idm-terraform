@@ -7,6 +7,7 @@ provider "aws" {
     tags = {
       Environment = "Test"
       Terraform   = "true"
+      Infra       = "idm"
       
     }
   }
@@ -91,11 +92,10 @@ resource "aws_vpc_security_group_ingress_rule" "allow_inbound_https" {
 }
 
 
-# This specifies inidividual ports, alternatively you can  all lan traffic that is inbound - see last block 
 
 resource "aws_vpc_security_group_ingress_rule" "allow_inbound_http" {
   security_group_id = aws_security_group.my_security_group.id
-  cidr_ipv4 = var.vpc_cidr
+  cidr_ipv4 = "0.0.0.0/0"
   from_port = 80 
   to_port = 80
   ip_protocol = "tcp"    
@@ -105,84 +105,7 @@ resource "aws_vpc_security_group_ingress_rule" "allow_inbound_http" {
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "allow_inbound_ldap" {
-  security_group_id = aws_security_group.my_security_group.id
-  cidr_ipv4 = var.vpc_cidr
-  from_port = 389 
-  to_port = 389
-  ip_protocol = "tcp"    
-  tags = {
-    Name = "ingress_rule_allow_ldap"
-    Description = "Allow inbound 389/tcp"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_inbound_ldaps" {
-  security_group_id = aws_security_group.my_security_group.id
-  cidr_ipv4 = var.vpc_cidr
-  from_port = 636 
-  to_port = 636
-  ip_protocol = "tcp"    
-  tags = {
-    Name = "ingress_rule_allow_ldap"
-    Description = "Allow inbound 636/tcp"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_inbound_krb_88_udp" {
-  security_group_id = aws_security_group.my_security_group.id
-  cidr_ipv4 = var.vpc_cidr
-  from_port = 88 
-  to_port = 88
-  ip_protocol = "udp"    
-  tags = {
-    Name = "ingress_rule_allow_krb_88_udp"
-    Description = "Allow inbound 88/udp"
-  }
-}
-
-
-resource "aws_vpc_security_group_ingress_rule" "allow_inbound_krb_464_udp" {
-  security_group_id = aws_security_group.my_security_group.id
-  cidr_ipv4 = var.vpc_cidr
-  from_port = 464 
-  to_port = 464
-  ip_protocol = "udp"    
-  tags = {
-    Name = "ingress_rule_allow_krb_464_udp"
-    Description = "Allow inbound 464/udp"
-  }
-}
-
-
-resource "aws_vpc_security_group_ingress_rule" "allow_inbound_krb_88_tcp" {
-  security_group_id = aws_security_group.my_security_group.id
-  cidr_ipv4 = var.vpc_cidr
-  from_port = 88 
-  to_port = 88
-  ip_protocol = "tcp"    
-  tags = {
-    Name = "ingress_rule_allow_krb_88_tcp"
-    Description = "Allow inbound 88/tcp"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_inbound_krb_464_tcp" {
-  security_group_id = aws_security_group.my_security_group.id
-  cidr_ipv4 = var.vpc_cidr
-  from_port = 464 
-  to_port = 464
-  ip_protocol = "tcp"    
-  tags = {
-    Name = "ingress_rule_allow_krb_464_tcp"
-    Description = "Allow inbound 464/tcp"
-  }
-}
-
-
-
 #######   This lets all traffic in from the LAN so there is the option to disregard the above 
-
 resource "aws_vpc_security_group_ingress_rule" "allow_lan" {
   security_group_id = aws_security_group.my_security_group.id
   cidr_ipv4 = var.vpc_cidr
@@ -205,7 +128,9 @@ resource "aws_vpc_security_group_egress_rule" "allow_egress" {
   }
 }
 
-#Deploy a single public subnets
+
+
+
 resource "aws_subnet" "public_subnet" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.1.0/24"
@@ -216,49 +141,6 @@ resource "aws_subnet" "public_subnet" {
   }
 }
 
-/*
-#Deploy the public subnets
-resource "aws_subnet" "public_subnets" {
-  for_each          = var.public_subnets 
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = cidrsubnet(var.vpc_cidr, 8, each.value +1)
-  availability_zone = tolist(data.aws_availability_zones.available.names)[each.value]
-  map_public_ip_on_launch = true 
-  tags = {
-    Name      = each.key
-    Terraform = "true"
-  }
-}
-*/ 
-
-locals {
-    enable_instance = true
-}
-
-# Resource Block
-resource "aws_instance" "rhel9-hosts" {
-  # for_each      = var.public_subnets
-  key_name      = aws_key_pair.deployer.key_name
-  count         = local.enable_instance ? 3 : 0 
-  ami           = var.rhel9_ami
-  instance_type = "t2.medium"
-  associate_public_ip_address = "true" 
-  private_ip = "10.0.1.${21 + count.index}" 
-  private_dns_name_options {
-    hostname_type = "resource-name"
-  }
-  subnet_id = aws_subnet.public_subnet.id 
-  security_groups = [aws_security_group.my_security_group.id]
-  tags = {
-    Terraform = "true"
-    Name      = "rhel9-host ${count.index +1}"
-  }
-
-  
-
-  user_data = file("${path.module}/user-install.sh")
-}
-
 
 resource "aws_key_pair" "deployer" {
     key_name = "ssh-key-pair"
@@ -266,12 +148,19 @@ resource "aws_key_pair" "deployer" {
 }
 
 
-resource "aws_instance" "rhel8-hosts" {
+#### SET TO FALSE TO SKIP aws_instance PROVISIONING 
+locals {
+    enable_instance = true
+}
+
+
+########## RHEL 7 ##########
+# Resource Block
+resource "aws_instance" "rhel7-hosts" {
   # for_each      = var.public_subnets
-  
-  count         = local.enable_instance ? 3 : 0 
   key_name      = aws_key_pair.deployer.key_name
-  ami           = var.rhel8_ami
+  count         = local.enable_instance ? 3 : 0 
+  ami           = var.rhel7_ami
   instance_type = "t2.medium"
   associate_public_ip_address = "true" 
   private_ip = "10.0.1.${11 + count.index}" 
@@ -281,10 +170,52 @@ resource "aws_instance" "rhel8-hosts" {
   subnet_id = aws_subnet.public_subnet.id 
   security_groups = [aws_security_group.my_security_group.id]
   tags = {
-    Terraform = "true"
+    Name      = "rhel7-host ${count.index +1}"
+  }
+  user_data = file("${path.module}/user-install.sh")
+}
+
+
+########## RHEL 8 ##########
+resource "aws_instance" "rhel8-hosts" {
+  # for_each      = var.public_subnets
+  
+  count         = local.enable_instance ? 3 : 0 
+  key_name      = aws_key_pair.deployer.key_name
+  ami           = var.rhel8_ami
+  instance_type = "t2.medium"
+  associate_public_ip_address = "true" 
+  private_ip = "10.0.1.${21 + count.index}" 
+  private_dns_name_options {
+    hostname_type = "resource-name"
+  }
+  subnet_id = aws_subnet.public_subnet.id 
+  security_groups = [aws_security_group.my_security_group.id]
+  tags = {
     Name      = "rhel8-host ${count.index +1}"
   }
 
+  user_data = file("${path.module}/user-install.sh")
+}
+
+########## RHEL 9 ##########
+# Resource Block
+resource "aws_instance" "rhel9-hosts" {
+  # for_each      = var.public_subnets
+  key_name      = aws_key_pair.deployer.key_name
+  count         = local.enable_instance ? 3 : 0 
+  ami           = var.rhel9_ami
+  instance_type = "t2.medium"
+  associate_public_ip_address = "true" 
+  private_ip = "10.0.1.${31 + count.index}" 
+  private_dns_name_options {
+    hostname_type = "resource-name"
+  }
+  subnet_id = aws_subnet.public_subnet.id 
+  security_groups = [aws_security_group.my_security_group.id]
+  tags = {
+    Name      = "rhel9-host ${count.index +1}"
+  }
   user_data = file("${path.module}/user-install.sh")
 }
 
