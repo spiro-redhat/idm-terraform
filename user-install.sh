@@ -47,10 +47,12 @@ cat << EOF > /home/ec2-user/rhel8-idm.sh
 #! /usr/bin/env bash
 
 # to become an ansible host
-sudo subscription-manager repos --enable=ansible-2.9-for-rhel-8-x86_64-rpms
-sudo yum update -y
-sudo yum install -y ansible ansible-freeipa
+#! /usr/bin/env bash
 
+# to become an ansible host
+sudo subscription-manager repos --enable=ansible-2.9-for-rhel-8-x86_64-rpms
+sudo subscription-manager repos --disable=rhel-8-for-x86_64-baseos-aus-rpms
+sudo yum update -y
 sudo yum -y module enable idm:DL1
 sudo yum -y distro-sync
 sudo yum -y module install idm:DL1/dns
@@ -86,15 +88,22 @@ sudo chmod 400 /home/ec2-user/.ssh/id_rsa
 sudo chmod 700 /home/ec2-user/*.sh
 sudo chown -R ec2-user:ec2-user /home/ec2-user/
 
-/home/ec2-user/day2.sh 
+
 if grep -q "release 7" /etc/redhat-release; then 
-    /home/ec2-user/rhel7-idm.sh
+    (/home/ec2-user/init-sub-manager.sh && \
+    /home/ec2-user/rhel7-idm.sh && \
+    touch  /home/ec2-user/finished.install 2>/dev/null) || \
+    touch /home/ec2-user/failed.install
 fi 
 if grep -q "release 8" /etc/redhat-release; then 
-    /home/ec2-user/rhel8-idm.sh
+    (/home/ec2-user/init-sub-manager.sh && \
+    /home/ec2-user/rhel8-idm.sh && \
+    touch  /home/ec2-user/finished.install 2>/dev/null) || \
+    touch /home/ec2-user/failed.install
 fi 
 if grep -q "release 9" /etc/redhat-release; then 
-    /home/ec2-user/rhel9-idm.sh
+    (/home/ec2-user/init-sub-manager.sh && \
+    /home/ec2-user/rhel9-idm.sh && \
+    touch  /home/ec2-user/finished.install 2>/dev/null) || \
+    touch /home/ec2-user/failed.install
 fi 
-
-
