@@ -38,7 +38,7 @@ chmod -R 400 /home/ec2-user/.ssh/id_rsa
 cat << EOF > /home/ec2-user/day2.sh
 #! /usr/bin/env bash
 
-sudo subscription-manager register --username=
+sudo subscription-manager register --org=11009103 --activationkey=rhel-activation
 sudo subscription-manager config --rhsm.manage_repos=1
 sudo subscription-manager repos --list-enabled
 EOF
@@ -85,3 +85,16 @@ EOF
 sudo chmod 400 /home/ec2-user/.ssh/id_rsa
 sudo chmod 700 /home/ec2-user/*.sh
 sudo chown -R ec2-user:ec2-user /home/ec2-user/
+
+/home/ec2-user/day2.sh 
+if grep -q "release 7" /etc/redhat-release; then 
+    /home/ec2-user/rhel7-idm.sh
+fi 
+if grep -q "release 8" /etc/redhat-release; then 
+    /home/ec2-user/rhel8-idm.sh
+fi 
+if grep -q "release 9" /etc/redhat-release; then 
+    /home/ec2-user/rhel9-idm.sh
+fi 
+
+
