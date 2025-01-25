@@ -38,7 +38,7 @@ chmod -R 400 /home/ec2-user/.ssh/id_rsa
 cat << EOF > /home/ec2-user/day2.sh
 #! /usr/bin/env bash
 
-sudo subscription-manager register --org=11009103 --activationkey=rhel-activation
+sudo subscription-manager register --org= --activationkey=rhel-activation
 sudo subscription-manager config --rhsm.manage_repos=1
 sudo subscription-manager repos --list-enabled
 EOF
